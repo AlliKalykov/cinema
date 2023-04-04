@@ -90,8 +90,8 @@ class Sector(models.Model):
 
 
 class Session(models.Model):
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм') # Фильм
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Зал') # Зал
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм', related_name='movie_session') # Фильм
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Зал', related_name='room_session') # Зал
     start_date = models.DateTimeField(verbose_name='Дата начала') # Дата начала
 
     def __str__(self):

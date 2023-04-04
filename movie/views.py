@@ -1,29 +1,41 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Movie, Employee
+from .models import *
+
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
+from rest_framework import filters
+from .serializers import *
+import django_filters
 
 
-def index(request):
-    return HttpResponse("Привет! Моя первая страница!")
-
-def get_movies(request):
-    movies = Movie.objects.all()
-    print(movies)
-    result = ''
-    for movie in movies:
-        result += f'{movie.name}    {movie.long_time}мин     {movie.start_date} <br><br>'
-    return HttpResponse(result)
+class MovieFilter(django_filters.FilterSet):
+    start_year = django_filters.NumberFilter(field_name='start_date__year')
+    class Meta:
+        model = Movie
+        fields = ('start_year', )
 
 
-def get_employee(request):
-    emploies = Employee.objects.all()
-    print(emploies)
-    result = ''
-    for emploie in emploies:
-        result += f'{emploie.name}    {emploie.surname}    {emploie.patronymic}    {emploie.position.name}    {emploie.password} <br><br>'
-    return HttpResponse(result)
+class MovieListAPIView(ListAPIView):
+    serializer_class = MovieSerializers
+    filter_backends = {filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend}
+    search_fields = ('name', 'company')
+    filterset_class = MovieFilter
+
+    def get_queryset(self):
+
+        queryset = Movie.objects.all()
+        # queryset = Movie.objects.filter(start_date__year=year) == MovieFilter.start_year
+        return queryset
+    
+
+class MovieCreateAPIView(CreateAPIView):
+    serializer_class = MovieSerializers
+
+    def get_queryset(self):
+        queryset = Movie.objects.all()
+        return queryset
 
 
-# Сделать вьюшки для каждой модели как показано выше
-# 
-# # 
+class MovieRetrieveAPIView(RetrieveAPIView):
+    serializer_class = MovieDetailSerializer
+    queryset = Movie.objects.all()
