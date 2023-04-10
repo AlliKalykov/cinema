@@ -2,19 +2,25 @@ from django.db import models
 
 
 class Movie(models.Model):
+    """
+    Фильм
+    Movie(id, name, long_time, start_date, end_date, company)
+    Докумментаця: https://docs.djangoproject.com/en/3.0/ref/models/fields/
+    """
     name = models.CharField(max_length=100, verbose_name='Название') # Название
     long_time = models.IntegerField(verbose_name='Длительность', help_text='В минутах') # Длительность
     start_date = models.DateField(verbose_name='Дата выхода') # Дата выхода
     end_date = models.DateField(verbose_name='Дата окончания') # Дата окончания
     company = models.CharField(max_length=100, verbose_name='Прокатчик') # Компания
-
+    is_active = models.BooleanField(default=False, verbose_name='Активен') # Активен
+    
     def __str__(self):
         return self.name
     
     class Meta:
         verbose_name = 'Фильм'
         verbose_name_plural = 'Фильмы'
-        ordering = ['start_date']
+        ordering = ['-name']
 
 
 class Room(models.Model):
@@ -26,6 +32,9 @@ class Room(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_capacity(self):
+        return self.capacity
     
     class Meta:
         verbose_name = 'Зал'
@@ -154,3 +163,7 @@ class MovingTicket(models.Model):
         verbose_name = 'Движение билета'
         verbose_name_plural = 'Движения билетов'
         ordering = ['ticket', 'created_at']
+
+
+
+print(5+7)
