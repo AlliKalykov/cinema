@@ -2,7 +2,7 @@ from django.urls import path
 
 # from rest_framework.authtoken import views
 
-from .views import MovieListAPIView, MovieCreateAPIView, MovieRetrieveAPIView, SessionListAPIView, AuthTokenView, RegistrationView
+from .views import MovieListAPIView, MovieCreateAPIView, MovieRetrieveAPIView, SessionListAPIView, AuthTokenView, RegistrationView, MovingTicketListCreateAPIView, MovingTicketRetrieveAPIView
 
 urlpatterns = [
     path('api-token-auth/', AuthTokenView.as_view(), name='api_token_auth'),
@@ -13,4 +13,6 @@ urlpatterns = [
     path('movie/create/', MovieCreateAPIView.as_view(), name='movie_create'),
     path('movie/<int:pk>/', MovieRetrieveAPIView.as_view(), name='movie_retrieve'),
     path('session/', SessionListAPIView.as_view(), name='session'),
+    path('moving_ticket/', MovingTicketListCreateAPIView.as_view(), name='moving_ticket'),
+    path('moving_ticket/<int:pk>/', MovingTicketRetrieveAPIView.as_view(), name='moving_ticket_retrieve'),
 ]

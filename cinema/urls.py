@@ -34,6 +34,8 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 urlpatterns = [
+
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
     path('', include("movie.urls")),
     re_path(

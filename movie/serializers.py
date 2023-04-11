@@ -21,6 +21,11 @@ class MovieSerializers(serializers.ModelSerializer):
         model = Movie
         fields = ('id', 'long_time', 'name', 'start_date', 'end_date', 'company')
 
+    def validate(self, data):
+        if data['start_date'] > data['end_date']:
+            raise serializers.ValidationError('Дата начала фильма не может быть больше даты конца')
+        return data
+
 
 class MovieSessionSerializer(serializers.ModelSerializer):
     room = serializers.StringRelatedField()  # == CharField(source='room.name')
@@ -38,8 +43,8 @@ class MovieDetailSerializer(serializers.ModelSerializer):
 
 
 class SessionSerializers(serializers.ModelSerializer):
-    movie = serializers.StringRelatedField() # == CharField(source='movie.is_active')
-    room = serializers.StringRelatedField()
+    # movie = serializers.StringRelatedField() # == CharField(source='movie.is_active')
+    # room = serializers.StringRelatedField()
     class Meta:
         model = Session
         fields = ('id', 'room', 'start_date', 'movie')
@@ -49,4 +54,10 @@ class RoomSerializers(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ('id', 'name', 'sector')
-        
+
+
+class MovingTicketSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = MovingTicket
+        fields = ('id', 'ticket', 'operation', 'created_at', )
+        read_only_fields = ('id', 'created_at',)

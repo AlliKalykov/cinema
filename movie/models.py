@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -55,6 +56,7 @@ class Job(models.Model):
 
 
 class Employee(models.Model):
+    # user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь') # Пользователь
     name = models.CharField(max_length=100, verbose_name='Имя') # Имя
     surname = models.CharField(max_length=100, verbose_name='Фамилия') # Фамилия
     patronymic = models.CharField(max_length=100, verbose_name='Отчество') # Отчество
@@ -153,8 +155,9 @@ class Ticket(models.Model):
 class MovingTicket(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Билет') # Билет
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания') # Дата создания
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name='Сотрудник') # Сотрудник
+    # employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name='Сотрудник') # Сотрудник
     operation = models.CharField(max_length=100, verbose_name='Операция') # Операция
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Продавец', related_name='seller') # Продавец
 
     def __str__(self):
         return f'{self.ticket} - {self.operation}'
@@ -164,6 +167,3 @@ class MovingTicket(models.Model):
         verbose_name_plural = 'Движения билетов'
         ordering = ['ticket', 'created_at']
 
-
-
-print(5+7)

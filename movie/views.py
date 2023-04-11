@@ -4,11 +4,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import *
 
-from rest_framework import generics
-from rest_framework import filters
+from rest_framework import generics, filters, status
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly
 
 
 from .serializers import *
@@ -68,6 +68,8 @@ class MovieListAPIView(generics.ListCreateAPIView):
     filter_backends = {filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend}
     search_fields = ('name', 'company')
     filterset_class = MovieFilter
+    ordering_fields = ('start_date', 'end_date')
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
 
@@ -75,9 +77,14 @@ class MovieListAPIView(generics.ListCreateAPIView):
         # queryset = Movie.objects.filter(start_date__year=year) == MovieFilter.start_year
         return queryset
     
+    def get(self, request, *args, **kwargs):
+        print(request.user)
+        return self.list(request, *args, **kwargs)
+    
 
 class MovieCreateAPIView(generics.CreateAPIView):
     serializer_class = MovieSerializers
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Movie.objects.all()
@@ -108,8 +115,7 @@ class SessionListAPIView(generics.ListCreateAPIView):
     queryset = Session.objects.filter(movie__is_active=False)
     filter_backends = {filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend}
     filters = ('start_date', )
-
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
     # filterset_class = SessionFilter
 
@@ -119,3 +125,32 @@ class SessionListAPIView(generics.ListCreateAPIView):
     #     last_date = now - 7
     #     queryset = Session.objects.filter(start_date__range=(first_date, last_date))
     
+
+class MovingTicketListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = MovingTicketSerializers
+    queryset = MovingTicket.objects.all()
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
+
+
+    # переопределить создание записи
+    # def create(self, request, *args, **kwargs):
+    #     return super().create(request, *args, **kwargs)
+
+
+class MovingTicketRetrieveAPIView(generics.RetrieveAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
+    serializer_class = MovingTicketSerializers
+    queryset = MovingTicket.objects.all()
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+
+    # дать возможность только создателю записи ее редактировать
+    def update(self, request, *args, **kwargs):
+        # берем запись
+        instance = self.get_object()
+        # проверяем, что пользователь является создателем записи
+        if instance.seller == request.user:
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN, data={'detail': 'Вы не владелец данной записи'})
