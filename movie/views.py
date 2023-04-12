@@ -4,11 +4,16 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import *
 
-from rest_framework import generics, filters, status
+from drf_yasg2.utils import swagger_auto_schema
+
+
+from rest_framework import generics, viewsets, filters, status, views, mixins
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly, AllowAny
 
 
 from .serializers import *
@@ -89,6 +94,9 @@ class MovieCreateAPIView(generics.CreateAPIView):
     def get_queryset(self):
         queryset = Movie.objects.all()
         return queryset
+    
+    def perform_create(self, serializer):
+        return super().perform_create(serializer)
 
 
 class MovieRetrieveAPIView(generics.RetrieveAPIView):
@@ -154,3 +162,75 @@ class MovingTicketRetrieveAPIView(generics.RetrieveAPIView, generics.DestroyAPIV
             return super().update(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN, data={'detail': 'Вы не владелец данной записи'})
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return super().patch(request, *args, **kwargs)
+    
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def job_list(request):
+    """
+    List all code snippets, or create a new snippet.
+    """
+    # view shcem for api job_list
+    if request.method == 'GET':
+        snippets = Job.objects.all()
+        serializer = JobSerializers(snippets, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = JobSerializers(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RoomViewSet(viewsets.ModelViewSet):
+    queryset = Room.objects.all()
+    serializer_class = RoomViewSerializers
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'number']
+    ordering_fields = ['name', 'number']
+
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+
+class EmployeeView(views.APIView, mixins.ListModelMixin, mixins.CreateModelMixin):
+    serializer_class = EmployeeSerializers
+    queryset = Employee.objects.all()
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+
+    # swagger для api
+    @swagger_auto_schema(
+        operation_description="Получение списка сотрудников",
+        responses={
+            200: EmployeeSerializers(many=True),
+            400: "Bad request",
+        },
+    )
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    
+    @swagger_auto_schema(
+        operation_description="Создание сотрудника",
+        responses={
+            201: EmployeeSerializers(),
+            400: "Bad request",
+        },
+        request_body=EmployeeSerializers,
+
+    )
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)

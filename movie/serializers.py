@@ -61,3 +61,24 @@ class MovingTicketSerializers(serializers.ModelSerializer):
         model = MovingTicket
         fields = ('id', 'ticket', 'operation', 'created_at', )
         read_only_fields = ('id', 'created_at',)
+
+
+class JobSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        fields = ('id', 'name')
+        read_only_fields = ('id',)
+
+
+class RoomViewSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ('id', 'name', 'capacity', 'description', 'row_count', 'seat_count')
+        read_only_fields = ('id',)
+
+
+class EmployeeSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ('id', 'name', 'surname', 'patronymic', 'position', 'password')
+        read_only_fields = ('id',)
