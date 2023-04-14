@@ -1,4 +1,5 @@
 from django.urls import path, include
+from django.views.generic import TemplateView
 
 from rest_framework import routers
 
@@ -13,8 +14,10 @@ router.register(r'room', RoomViewSet, basename='movie')
 # router.register(r'Session', SessionViewSet, basename='session')
 # router.register(r'MovingTicket', MovingTicketViewSet, basename='moving_ticket')
 
+app_name = 'movie'
+
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
 
     path('api-token-auth/', AuthTokenView.as_view(), name='api_token_auth'),
     path('registration/', RegistrationView.as_view(), name='registration'),
@@ -31,4 +34,5 @@ urlpatterns = [
     path('movie_template/', MovieTemplateView.as_view(), name='movie_template'),
     path('movie_detail/<int:pk>/', MovieDetailView.as_view(), name='movie_detail'),
     path('movie_create/', MovieCreateView.as_view(), name='movie_create'),
+    path('', TemplateView.as_view(template_name='base.html'), name='base')
 ]

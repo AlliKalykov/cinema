@@ -273,4 +273,10 @@ class MovieCreateView(CreateView):
     
     # redirect to movie_detail
     def get_success_url(self):
-        return reverse('movie_detail', kwargs={'pk': self.object.pk})
+        return reverse('movie:movie_detail', kwargs={'pk': self.object.pk})
+    
+from django.views.generic.edit import UpdateView
+
+class MovieUpdateView(UpdateView):
+    model = Movie
+    template_name = 'movie/movie_update.html'

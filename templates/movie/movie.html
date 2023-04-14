@@ -6,6 +6,7 @@
     <h1>My First Template</h1>
     <p>Current time:</p>
     {% for movie in movies %}
+        <a href="{% url 'movie_detail' movie.id %}">{{ movie.name }}</a>
         <p>{{ movie.id }}</p>
         <p>{{ movie.name }}</p>
         <p>{{ movie.long_time }}</p>
