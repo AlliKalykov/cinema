@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+<h1>My First Template</h1>
+
+{% block content %}
+
+    <p>{{ movie.id }}</p>
+    <p>{{ movie.name }}</p>
+    <p>{{ movie.long_time }}</p>
+    <p>{{ movie.company }}</p>
+{% endblock %}

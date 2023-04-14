@@ -4,7 +4,7 @@ from rest_framework import routers
 
 # from rest_framework.authtoken import views
 
-from .views import MovieListAPIView, MovieCreateAPIView, MovieRetrieveAPIView, SessionListAPIView, AuthTokenView, RegistrationView, MovingTicketListCreateAPIView, MovingTicketRetrieveAPIView, job_list, RoomViewSet, EmployeeView
+from .views import MovieListAPIView, MovieCreateAPIView, MovieRetrieveAPIView, SessionListAPIView, AuthTokenView, RegistrationView, MovingTicketListCreateAPIView, MovingTicketRetrieveAPIView, job_list, RoomViewSet, EmployeeView, MovieTemplateView, MovieDetailView, MovieCreateView
 
 # router
 
@@ -28,4 +28,7 @@ urlpatterns = [
     path('moving_ticket/<int:pk>/', MovingTicketRetrieveAPIView.as_view(), name='moving_ticket_retrieve'),
     path('jobdef/', job_list, name='job'),
     path('employee/', EmployeeView.as_view(), name='employee'),
+    path('movie_template/', MovieTemplateView.as_view(), name='movie_template'),
+    path('movie_detail/<int:pk>/', MovieDetailView.as_view(), name='movie_detail'),
+    path('movie_create/', MovieCreateView.as_view(), name='movie_create'),
 ]

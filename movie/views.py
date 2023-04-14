@@ -234,3 +234,43 @@ class EmployeeView(views.APIView, mixins.ListModelMixin, mixins.CreateModelMixin
     )
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
+
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView
+from django.views.generic.detail import DetailView
+from django.urls import reverse
+from .forms import MovieForm
+
+class MovieTemplateView(ListView):
+    template_name = 'movie/movie.html'
+    model = Movie
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['movies'] = self.model.objects.all()
+        return context
+    
+
+class MovieDetailView(DetailView):
+    template_name = 'movie/movie_detail.html'
+    model = Movie
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['movie'] = self.model.objects.get(pk=self.kwargs['pk'])
+        return context
+
+
+class MovieCreateView(CreateView):
+    template_name = 'movie/movie_create.html'
+    form_class = MovieForm
+    success_url = '/movie_detail/'
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+    
+    # redirect to movie_detail
+    def get_success_url(self):
+        return reverse('movie_detail', kwargs={'pk': self.object.pk})
