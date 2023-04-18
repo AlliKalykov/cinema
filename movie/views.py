@@ -84,6 +84,7 @@ class MovieListAPIView(generics.ListCreateAPIView):
     
     def get(self, request, *args, **kwargs):
         print(request.user)
+
         return self.list(request, *args, **kwargs)
     
 
@@ -96,6 +97,11 @@ class MovieCreateAPIView(generics.CreateAPIView):
         return queryset
     
     def perform_create(self, serializer):
+        name = serializer.validated_data['name']
+        company = serializer.validated_data['company']
+        start_date = serializer.validated_data['start_date']
+        end_date = serializer.validated_data['end_date']
+
         return super().perform_create(serializer)
 
 
@@ -180,8 +186,13 @@ def job_list(request):
     # view shcem for api job_list
     if request.method == 'GET':
         snippets = Job.objects.all()
-        serializer = JobSerializers(snippets, many=True)
-        return Response(serializer.data)
+        data = []
+        for job in snippets:
+            data.append({
+                "name": job.name,
+                "id": job.id,
+            })
+        return Response(str(data))
 
     elif request.method == 'POST':
         serializer = JobSerializers(data=request.data)

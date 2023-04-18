@@ -66,7 +66,7 @@ class MovingTicketSerializers(serializers.ModelSerializer):
 class JobSerializers(serializers.ModelSerializer):
     class Meta:
         model = Job
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'description', 'salary', 'is_active')
         read_only_fields = ('id',)
 
 

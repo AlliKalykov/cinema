@@ -7,3 +7,7 @@ __pycache__/
 *.sqlite3
 
 .env
+
+googleky.json
+googlemail.json
+token.json
