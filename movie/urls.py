@@ -5,7 +5,7 @@ from rest_framework import routers
 
 # from rest_framework.authtoken import views
 
-from .views import MovieListAPIView, MovieCreateAPIView, MovieRetrieveAPIView, SessionListAPIView, AuthTokenView, RegistrationView, MovingTicketListCreateAPIView, MovingTicketRetrieveAPIView, job_list, RoomViewSet, EmployeeView, MovieTemplateView, MovieDetailView, MovieCreateView
+from .views import MovieListAPIView, MovieCreateAPIView, MovieRetrieveAPIView, SessionListAPIView, AuthTokenView, RegistrationView, MovingTicketListCreateAPIView, MovingTicketRetrieveAPIView, job_list, RoomViewSet, EmployeeView, MovieTemplateView, MovieDetailView, MovieCreateView, GenerateRandomUserView
 
 # router
 
@@ -17,6 +17,7 @@ router.register(r'room', RoomViewSet, basename='movie')
 app_name = 'movie'
 
 urlpatterns = [
+    path('users_list/', GenerateRandomUserView.as_view(), name='users_list'),
     path('api/', include(router.urls)),
 
     path('api-token-auth/', AuthTokenView.as_view(), name='api_token_auth'),

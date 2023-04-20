@@ -153,3 +153,14 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
 }
+
+# broker is rabbitmq
+# CELERY_BROKER_URL = 'amqp://localhost'
+
+
+# broker is redis
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+GMAIL_KEY = BASE_DIR / 'googlemail.json'
+GMAIL_TOKEN = BASE_DIR / 'token.json'
